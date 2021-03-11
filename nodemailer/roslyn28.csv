@@ -1,0 +1,4 @@
+"Service","Name","Username","Password","Hostname","Port","Security"
+"SMTP","Roslyn Thompson","roslyn28@ethereal.email","ZFPNAHQWPZkBsJZvxy","smtp.ethereal.email",587,"STARTTLS"
+"IMAP","Roslyn Thompson","roslyn28@ethereal.email","ZFPNAHQWPZkBsJZvxy","imap.ethereal.email",993,"TLS"
+"POP3","Roslyn Thompson","roslyn28@ethereal.email","ZFPNAHQWPZkBsJZvxy","pop3.ethereal.email",995,"TLS"
