@@ -1,14 +1,18 @@
 const express = require('express');
 const router = express.Router();
+const { mongoSessionStore } = require('../config/db');
+
 const { body, validationResult } = require('express-validator');
-const User = require('../model/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { jwtSecret } = require('../config');
-const Refresh = require('../model/Refresh');
 const crypto = require('crypto');
 const { v4 } = require('uuid');
+
+const User = require('../model/User');
 const PasswordReset = require('../model/PasswordReset');
+const Refresh = require('../model/Refresh');
+
 const { sendEmail } = require('../nodemailer/nodemailer');
 const { sanitizeUser } = require('../utils/authn');
 
@@ -130,8 +134,15 @@ router.post(
   body('password').notEmpty(),
   async (req, res) => {
     try {
+      console.log('/login')
       const errors = validationResult(req);
       if (!errors.isEmpty()) throw errors;
+
+      if (req.session.authenticated) {
+        console.log('req.session.authenticated === true');
+        res.status(200).json({ authenticated: true });
+        return;
+      };
 
       const { email, password } = req.body;
       const user = await User.findOne({ email });
@@ -140,61 +151,115 @@ router.post(
       // Compare passwords with bcrypt.compare method 
       // the first password parameter is the one in plain text, 
       // and the second user.password is the hashed password
-      const match = await bcrypt.compare(password, user.password);
-      if (!match) throw 'The password is incorrect';
+      const correct = await bcrypt.compare(password, user.password);
+      if (!correct) throw 'The password is incorrect';
   
+      // NOTE: never send refresh tokens to the client!
+      const refreshToken = crypto.randomBytes(32).toString('hex');
+      await Refresh.create({
+        user: user._id,
+        token: refreshToken,
+      });
+      
       // generate an access token
       // encode user._id and user.email into the token
       const accessToken = jwt.sign(
         { _id: user._id, email: user.email },
         jwtSecret,
-        { expiresIn: '5m' });
-  
-      // generate a refresh token 
-      const refreshToken = crypto.randomBytes(32).toString('hex');
-      await Refresh.create({
-        user: user._id,
-        token: refreshToken});
+        { expiresIn: '5m' },
+      );
 
       user.lastActive = Date.now();
+      user.authenticated = true;
       await user.save();
 
-      // res.cookie('name', 'express', { maxAge: 30000 }).send('cookie set'); //Sets name = express
-      req.session.user = user;
-      const userCopy = { ...user };
+      const userCopy = { ...user._doc };
+      // console.log(userCopy);
+      // NOTE: never send the password to the client!
       delete userCopy.password;
       req.session.authenticated = true;
-      res.status(200).json({ redirect: 'APP', data: { accessToken, refreshToken }, user });
+      req.session.user_id = user._id;
+      
+      // Respond with accessToken and user DTO.
+      res.status(200).json({ authenticated: true, accessToken, user: userCopy });
     } catch (error) {
       console.log(error)
-      if (typeof error === 'string') {
-        return res.status(400).json({ error });
-      }
-
+      if (typeof error === 'string') return res.status(400).json({ error });
       return res.status(400).json({ errors: error.array() });
     };
   }
 );
 
 router.get('/authn', (req, res) => {
-  // console.log('sessionID: ', req.sessionID);
-  console.log('session', req.session)
-  if (!req.session.authenticated) {
-    res.status(401).json({ authenticated: false });
-    return;
-  }
+  console.log('/authn')
+  console.log('cookie.maxAge: ', req.session.cookie.maxAge);
 
-  console.log('User authenticated.')
-  res.status(200).json({ authenticated: true, user: req.session.user })
+  const destroySession = () => {
+    req.session.destroy(() => {
+      // TODO: delete access and refresh tokens
+      console.log('Session has been revoked!')
+    });
+    console.log('response: "{ authenticated: false }"')
+    res.status(403).json({ authenticated: false });
+    return true;
+  };
+
+  // if (!req.session) {
+  //   console.log('!req.session', req.session);
+  //   destroySession();
+  //   return;
+  // }
+
+  // const { user } = req.session;
+  console.log('{ authenticated: true }');
+  console.log(req.sessionID);
+  mongoSessionStore.touch(req.sessionID, req.session, async error => {
+    try {
+      console.log('mongoSessionStore error: ', error);
+      if (error) {
+        destroySession();
+        return;
+      }
+      console.log('touched() maxAge:', req.session.cookie.maxAge);
+      console.log(req.session.user_id);
+      const user = await User.findOne({ _id: req.session.user_id });
+      const userCopy = { ...user._doc };
+      // console.log(userCopy);
+      // NOTE: never send the password to the client!
+      delete userCopy.password;
+
+      res.status(200).json({ authenticated: true, user: userCopy });
+    } catch (error) {
+      console.log(error);
+    }
+  });
 });
 
-router.get('/sign-out', (req, res) => {
-  req.session.destroy(() => {
-    // TODO: delete access and refresh tokens
-    console.log('Session has been revoked!')
-  });
-  res.status(200).json({ redirect: 'LOGIN'})
-})
+router.post(
+  '/sign-out',
+  body('email').isEmail(),
+  async (req, res) => {
+  console.log('/sign-out', req.body.email);
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    user.authenticated = false;
+    await user.save();
+    console.log('User.authenticated set to false!');
+
+    const token = await Refresh.findOne({ user: user._id });
+    const deleted = await token.remove();
+    console.log(`User's refresh token has been deleted!`);
+
+    req.session.destroy(() => {
+      // TODO: delete access token
+      console.log('Session has been revoked!');
+      // console.log('req.session', req.session);
+    });
+    res.status(200).json({ authenticated: false })
+  } catch (error) {
+    console.log(error);
+  }
+});
 
  /**
  * @method - POST

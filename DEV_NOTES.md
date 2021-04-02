@@ -6,3 +6,7 @@
 ## Email Test Account
 
 - ethereal: https://ethereal.email/
+
+#### technologies to add
+
+- http://www.passportjs.org/

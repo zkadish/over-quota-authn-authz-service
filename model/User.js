@@ -26,13 +26,17 @@ const userSchema = new Schema({
     unique: true,
     required: true,
   },
+  isEmailVerified: {
+    type: Boolean,
+    default: false,
+  },
   alt_email: {
     type: String,
     unique: true,
     default: '',
   },
-  isEmailVerified: {
-    type: String,
+  isAltEmailVerified: {
+    type: Boolean,
     default: false,
   },
   password: {
@@ -44,7 +48,7 @@ const userSchema = new Schema({
     default: '',
   },
   isPhoneVerified: {
-    type: String,
+    type: Boolean,
     default: false,
   },
   authenticated: {
@@ -79,9 +83,9 @@ const userSchema = new Schema({
     type: Array,
     default: [], // 'NEWS_LETTER', 'MARKETING'
   },
-  team: { // groups???
-    type: String,
-    default: '',
+  teams: { // groups???
+    type: Array,
+    default: [],
   },
   active: {
     type: Boolean,
