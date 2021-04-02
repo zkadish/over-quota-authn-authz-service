@@ -1,5 +1,6 @@
-const { mongoDB } = require('./index');
+const { mongoDB, mongoSession } = require('./index');
 const mongoose = require('mongoose');
+const MongoStore = require('connect-mongo').default;
 
 const initMongo = async () => {
   try {
@@ -15,4 +16,7 @@ const initMongo = async () => {
   }
 };
 
-module.exports = initMongo;
+const mongoSessionStore = MongoStore.create({ mongoUrl: mongoSession });
+
+module.exports = { initMongo, mongoSessionStore };
+// module.exports = { initMongo };

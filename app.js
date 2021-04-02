@@ -1,5 +1,5 @@
 require('dotenv').config();
-const initMongo = require('./config/db');
+const { initMongo, mongoSessionStore } = require('./config/db');
 
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
@@ -10,7 +10,7 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const logger = require('morgan');
 // const MongoDBStore = require('connect-mongodb-session')(session);
-const MongoStore = require('connect-mongo').default;
+// const MongoStore = require('connect-mongo').default;
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -22,6 +22,7 @@ const authRouter = require('./routes/auth');
 
 const db = initMongo();
 const app = express();
+// const mongoSessionStore = MongoStore.create({ mongoUrl: 'mongodb://localhost:27017/serverSessions' });
 // const mongoSessionStore = new MongoDBStore({
 //   // TODO: make sure to use env to pass connection string
 //   uri: 'mongodb://localhost:27017/connect_mongodb_session_dev',
@@ -66,9 +67,10 @@ app.use(session({
     // maxAge: 1000 * 60, // 1 min
     maxAge: 1000 * 60 * 5, // 5 min
   },
-  // store: mongoSessionStore,
-  store: MongoStore.create({ mongoUrl: 'mongodb://localhost:27017/serverSessions' }),
-  resave: false,
+  // rolling: true,
+  store: mongoSessionStore,
+  // store: MongoStore.create({ mongoUrl: 'mongodb://localhost:27017/serverSessions' }),
+  resave: true,
   saveUninitialized: false,
 }));
 app.use(express.static(path.join(__dirname, 'public')));

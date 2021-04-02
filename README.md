@@ -25,9 +25,8 @@
 
 ### ToDo
 
+- add to github
 - track the users devices and verify with the user its theirs via email.
-
 - set up 2 factor authentication via sms and Google Authenticator.
-
 - get and verify users phone number via sms.
   
