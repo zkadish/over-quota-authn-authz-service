@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  app-framework:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # command: /SKILL-UP-SERVER/start-script.sh
+    # command: service nginx start
+    # command: ls -laF
+    command: ./startup-script.sh
+    # networks:
+    #   - skillup-network
+    volumes:
+      - $PWD/server:/SKILL-UP-SERVER/server
+    ports:
+      - 7070:80
+      - 9230:9229
+    restart: unless-stopped
+
+volumes:
+  server:
+
+networks:
+  default:
+    external:
+      name: skillup-network

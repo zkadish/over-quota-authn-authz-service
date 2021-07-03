@@ -16,7 +16,7 @@ const initMongo = async () => {
   }
 };
 
-const mongoSessionStore = MongoStore.create({ mongoUrl: mongoSession });
+// const mongoSessionStore = MongoStore.create({ mongoUrl: mongoSession });
 
-module.exports = { initMongo, mongoSessionStore };
-// module.exports = { initMongo };
+// module.exports = { initMongo, mongoSessionStore };
+module.exports = { initMongo };

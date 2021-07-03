@@ -29,4 +29,14 @@
 - track the users devices and verify with the user its theirs via email.
 - set up 2 factor authentication via sms and Google Authenticator.
 - get and verify users phone number via sms.
-  
+
+### Build image and run docker container with docker-compose
+
+- Build and run mongo and mongo-express
+- $ docker-compose up --build --force-recreate --remove-orphans
+
+- Connect to the mongo db with a terminal
+- docker exec -it {container} bash
+
+- open skillup-app-server in the browser for a quick health check
+- http://localhost:8080

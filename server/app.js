@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { initMongo, mongoSessionStore } = require('./config/db');
+const { initMongo, mongoSessionStore } = require('./config/mongo/db');
 
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
@@ -65,7 +65,7 @@ app.use(session({
     secure: false,
     // maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
     // maxAge: 1000 * 60, // 1 min
-    maxAge: 1000 * 60 * 5, // 5 min
+    maxAge: 1000 * 60 * 30, // 30 min
   },
   // rolling: true,
   store: mongoSessionStore,

@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { mongoSessionStore } = require('../config/db');
-
 const { body, validationResult } = require('express-validator');
+
+const { mongoSessionStore } = require('../config/mongo/db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { jwtSecret } = require('../config');
+const { jwtSecret } = require('../config/mongo');
 const crypto = require('crypto');
 const { v4 } = require('uuid');
 
@@ -19,13 +19,13 @@ const { sanitizeUser } = require('../utils/authn');
 /**
  * @method - POST
  * @param - /register
- * @description - Register User by adding their email to the database
+ * @description - Register User by adding their email and account id to the database
  * @note - user is not active...
  */
  router.post(
    '/register-user',
    body('email').isEmail(),
-   body('emailLists'),
+   body('emailLists'), // TODO: change this ket to news-letters
    async (req, res) => {
      try {
       const errors = await validationResult(req);

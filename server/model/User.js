@@ -21,6 +21,11 @@ const userSchema = new Schema({
     unique: true,
     default: '',
   },
+  user_account_id: {
+    type: String,
+    unique: true,
+    default: '',
+  },
   email: { // work email
     type: String,
     unique: true,
