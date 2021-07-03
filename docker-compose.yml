@@ -4,17 +4,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    # command: /SKILL-UP-SERVER/start-script.sh
-    # command: service nginx start
-    # command: ls -laF
     command: ./startup-script.sh
-    # networks:
-    #   - skillup-network
     volumes:
-      - $PWD/server:/SKILL-UP-SERVER/server
+      - $PWD/server:/AUTHN-AUTHZ-SERVER/server
     ports:
-      - 7070:80 #TODO: make external port a random number
-      - 9230:9229
+      - 7070:80 # TODO: make external port a random number
+      - 9230:9229 # this is the debug port
     restart: unless-stopped
 
 volumes:

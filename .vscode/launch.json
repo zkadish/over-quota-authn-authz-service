@@ -3,9 +3,9 @@
     {
       "type": "node",
       "request": "attach",
-      "port": 9230,
       "name": "Docker: Attach to Node",
-      "remoteRoot": "SKILL-UP-SERVER/server",
+      "port": 9230,
+      "remoteRoot": "/SKILL-UP-SERVER/server",
       "localRoot": "${workspaceFolder}/server"
     }
   ]

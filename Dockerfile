@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 
-WORKDIR /SKILL-UP-SERVER
+WORKDIR /AUTHN-AUTHZ-SERVER
 
 COPY package.json ./
 COPY package-lock.json ./
