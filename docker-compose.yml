@@ -1,6 +1,6 @@
 version: "3.9"
 services:
-  app-framework:
+  app-authn-authz:
     build:
       context: .
       dockerfile: Dockerfile
@@ -13,7 +13,7 @@ services:
     volumes:
       - $PWD/server:/SKILL-UP-SERVER/server
     ports:
-      - 7070:80
+      - 7070:80 #TODO: make external port a random number
       - 9230:9229
     restart: unless-stopped
 
