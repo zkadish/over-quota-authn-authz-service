@@ -12,7 +12,7 @@ const logger = require('morgan');
 // const MongoDBStore = require('connect-mongodb-session')(session);
 // const MongoStore = require('connect-mongo').default;
 
-const indexRouter = require('./routes/index');
+// const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth');
 
@@ -85,7 +85,7 @@ app.use((req, res, next) => {
 	}
 });
 
-app.use('/', indexRouter);
+// app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/auth', authRouter);
 

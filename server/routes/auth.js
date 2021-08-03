@@ -15,6 +15,7 @@ const Refresh = require('../model/Refresh');
 
 const { sendEmail } = require('../nodemailer/nodemailer');
 const { sanitizeUser } = require('../utils/authn');
+const provisionUser = require('../utils/provisionUser');
 
 /**
  * @method - POST
@@ -37,9 +38,11 @@ const { sanitizeUser } = require('../utils/authn');
       // If user doesn't exist register the user with their email and set their emailLists setting
       if (!userExists) {
         // create and save the user, redirect to create password and return user to FE
-        // note: user only has an email at this point, and doesn't have a password
-        const user = await User.create(req.body);
-        console.log('redirect: CREATE_PASSWORD');
+        // note: user only has an email and an account number at this point, and doesn't have a password yet...
+        const newUser = req.body;
+        newUser.account_id = v4().toString().replace(/-/g, '');
+        const user = await User.create(newUser);
+        // once the email is saved and the use is created redirect them to the password creation page
         return res.status(200).json({ redirect: 'CREATE_PASSWORD', user });
       }
       // user exists and doesn't have a password
@@ -94,20 +97,24 @@ const { sanitizeUser } = require('../utils/authn');
     
       // If there are no errors
       const { email } = req.body;
-      const userExists = await User.findOne({ email });
-      if (userExists) {
-        userExists.password = req.body.password; // add users password
-        userExists.active = true; // set user to active
-        const user = await userExists.save();
+      const user = await User.findOne({ email });
+      if (user) {
+        user.password = req.body.password; // add users password
+        user.active = true; // set user to active
+
+        // provision user
+        await provisionUser(user);
+        const newUser = await user.save();
 
         // redirect to the sign in page
-        res.status(200).json({ redirect: 'LOGIN' });
+        // TODO: pass updated user back to the client?
+        res.status(200).json({ redirect: 'LOGIN', newUser });
         return;
       }
       
-      if (!userExists) {
+      if (!user) {
         // throw 'User doesn't exists.';
-        res.status(200).json({ redirect: 'REGISTER_USER', user });
+        res.status(200).json({ redirect: 'REGISTER_USER' });
       }
     } catch (error) {
       console.log(error);

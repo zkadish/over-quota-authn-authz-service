@@ -16,31 +16,40 @@ const userSchema = new Schema({
     type: String,
     default: '',
   },
-  corporate_account_id: {
+  corporate_id: {
     type: String,
-    unique: true,
-    default: '',
+    // must be unique, undefined or null
+    index: {
+      unique: true,
+      partialFilterExpression: { corporate_id: { $type: "string" } },
+    },
   },
-  user_account_id: {
+  account_id: {
     type: String,
-    unique: true,
-    default: '',
+    // must be unique, undefined or null
+    index: {
+      unique: true,
+      partialFilterExpression: { account_id: { $type: "string" } },
+    },
   },
   email: { // work email
     type: String,
     unique: true,
     required: true,
   },
-  isEmailVerified: {
+  is_email_verified: {
     type: Boolean,
     default: false,
   },
   alt_email: {
     type: String,
-    unique: true,
-    default: '',
+    // must be unique, undefined or null
+    index: {
+      unique: true,
+      partialFilterExpression: { alt_email: { $type: "string" } },
+    },
   },
-  isAltEmailVerified: {
+  is_alt_email_verified: {
     type: Boolean,
     default: false,
   },
@@ -48,11 +57,15 @@ const userSchema = new Schema({
     type: String,
     default: null,
   },
-  phoneNumber: {
+  phone_number: {
     type: String,
-    default: '',
+    // must be unique, undefined or null
+    index: {
+      unique: true,
+      partialFilterExpression: { phone_number: { $type: "string" } },
+    },
   },
-  isPhoneVerified: {
+  is_phone_verified: {
     type: Boolean,
     default: false,
   },
@@ -60,11 +73,11 @@ const userSchema = new Schema({
     type: Boolean,
     default: false,
   },
-  lastActive: {
+  last_active: {
     type: Date,
     default: Date.now(),
   },
-  createdOn: {
+  created_on: {
     type: Date,
     default: Date.now(),
   },
@@ -72,7 +85,7 @@ const userSchema = new Schema({
     type: Boolean,
     default: true,
   },
-  accountType: { // license-type?
+  account_type: { // license-type?
     type: String,
     default: 'test-user', // single-user, multi-user, test-user, guest-user
   },
@@ -80,11 +93,11 @@ const userSchema = new Schema({
     type: Array,
     default: ['BASE'],
   },
-  rolesPermissions: {
+  permissions_role: {
     type: String,
     default: 'admin', // account owner, super-admin, admin, manager, user, guest
   },
-  emailLists: {
+  email_lists: {
     type: Array,
     default: [], // 'NEWS_LETTER', 'MARKETING'
   },
@@ -117,7 +130,7 @@ const userSchema = new Schema({
     default: '',
   }
 });
-
+userSchema.plugin(require('mongoose-beautiful-unique-validation'));
 userSchema.pre('save', async function () {
   try {
     const user = this;
