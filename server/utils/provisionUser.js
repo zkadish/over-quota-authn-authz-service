@@ -9,8 +9,6 @@ const provisionUser = async (user) => {
 
     // Get default battle cards, replace account_id and generate new battle card ids.
     const battleCards = await frameWorks.getBattleCards(user);
-    // Create the new user's battle cards
-    await frameWorks.postBattleCards(user, { battleCards });
 
     // Add talk tracks order to battle cards
     for (let i = 0; i < talkTracks.length; i++) {
@@ -19,6 +17,9 @@ const provisionUser = async (user) => {
       if (i === 6) battleCards[2]['talk-tracks'].push(talkTracks[i].id);
       if (i === 7) battleCards[3]['talk-tracks'].push(talkTracks[i].id);
     };
+
+    // Create the new user's battle cards
+    await frameWorks.postBattleCards(user, { battleCards });
 
     // Get default template order, replace account_id and generate new template ids.
     const templateOrder = await frameWorks.getTemplateOrder(user);
