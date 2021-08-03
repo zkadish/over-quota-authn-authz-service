@@ -12,7 +12,7 @@ var http = require('http');
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3333');
+var port = normalizePort(process.env.PORT || '7777');
 app.set('port', port);
 
 /**
@@ -25,7 +25,8 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
- server.listen(port, '0.0.0.0', () => {
+//  server.listen(port, '0.0.0.0', () => { // use ip 0.0.0.0 when running inside of docker
+server.listen(port, '127.0.0.1', () => {
   console.log('app-server is starting...')
 });
 // server.listen(port);
@@ -99,8 +100,8 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
-  console.log('app-server is running at: ' + addr.address + ':' + addr.port);
+  console.log('express server is running at: ' + addr.address + ':' + addr.port);
   // console.log('app-server is proxied through nginx running at: localhost')
-  console.log('In your browser at: http://localhost:7070');
+  console.log('In your browser at: http://localhost:7777');
   // console.log('http://localhost:' + addr.port);
 }

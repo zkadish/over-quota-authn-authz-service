@@ -46,7 +46,7 @@ const userSchema = new Schema({
     // must be unique, undefined or null
     index: {
       unique: true,
-      partialFilterExpression: { account_id: { $type: "string" } },
+      partialFilterExpression: { alt_email: { $type: "string" } },
     },
   },
   is_alt_email_verified: {
@@ -62,7 +62,7 @@ const userSchema = new Schema({
     // must be unique, undefined or null
     index: {
       unique: true,
-      partialFilterExpression: { account_id: { $type: "string" } },
+      partialFilterExpression: { phone_number: { $type: "string" } },
     },
   },
   is_phone_verified: {

@@ -13,6 +13,7 @@ RUN apt-get update \
     && apt-get install -y nano apt-utils \
     && apt-get install -y nginx \
     && apt-get install -y curl \
+    && apt-get install -y iputils-ping \
     # && apt-get install -y npm \
     && curl -sL https://deb.nodesource.com/setup_14.x | bash \
     && apt-get -y install nodejs \

@@ -4,11 +4,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      # network: host
+    # network_mode: host
     command: ./startup-script.sh
+    networks:
+      - skillup-network
+    # networks:
+    #   hostnet: {}
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
     volumes:
       - $PWD/server:/AUTHN-AUTHZ-SERVER/server
     ports:
-      - 7070:80 # TODO: make external port a random number
+      - 7777:70 # express and exposed docker port are the same
       - 9230:9229 # this is the debug port
     restart: unless-stopped
 
@@ -16,6 +24,15 @@ volumes:
   server:
 
 networks:
-  default:
-    external:
-      name: skillup-network
+  skillup-network:
+    external: true
+
+# networks:
+#   hostnet:
+#     external: true
+#     name: host
+
+# networks:
+#   default:
+#     external: true
+#     name: skillup-network

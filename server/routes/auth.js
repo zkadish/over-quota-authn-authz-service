@@ -97,24 +97,24 @@ const provisionUser = require('../utils/provisionUser');
     
       // If there are no errors
       const { email } = req.body;
-      const userExists = await User.findOne({ email });
-      if (userExists) {
-        userExists.password = req.body.password; // add users password
-        userExists.active = true; // set user to active
+      const user = await User.findOne({ email });
+      if (user) {
+        user.password = req.body.password; // add users password
+        user.active = true; // set user to active
 
         // provision user
-        await provisionUser(userExists);
-        const user = await userExists.save();
+        await provisionUser(user);
+        const newUser = await user.save();
 
         // redirect to the sign in page
         // TODO: pass updated user back to the client?
-        res.status(200).json({ redirect: 'LOGIN', user });
+        res.status(200).json({ redirect: 'LOGIN', newUser });
         return;
       }
       
-      if (!userExists) {
+      if (!user) {
         // throw 'User doesn't exists.';
-        res.status(200).json({ redirect: 'REGISTER_USER', user });
+        res.status(200).json({ redirect: 'REGISTER_USER' });
       }
     } catch (error) {
       console.log(error);
