@@ -4,6 +4,11 @@ const { v4 } = require('uuid');
 
 const uuid = () => v4().toString().replace(/-/g, '');
 
+/**
+ * These functions are a part of use provisioning and
+ * only get fired on user password creation...
+ */
+
 const getTalkTracks = async (user) => {
   try {
     const response = await axios({
@@ -219,7 +224,6 @@ const getBlocks = async (user, templates) => {
 }
 
 const postBlocks = async (blocks) => {
-  // console.log(templates);
   try {
     const response = await axios({
       method: 'post',
