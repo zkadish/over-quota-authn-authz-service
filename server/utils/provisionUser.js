@@ -96,7 +96,6 @@ const provisionUser = async (user) => {
     await frameWorks.postBlocks({ blocks });
     // Create the new users default elements
     await frameWorks.postElements({ elements });
-    console.log(elements);
 
   } catch (err) {
     console.log(err);

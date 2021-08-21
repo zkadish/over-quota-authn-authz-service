@@ -117,7 +117,8 @@ const getTemplateOrder = async (user) => {
     const { data } = response;
     delete data._id;
     data.account_id = user.account_id;
-    data.templates = data.templates.map(id => uuid());
+    data.id = uuid();
+    data.templates = data.templates.map(() => uuid());
     return data;
   } catch (err) {
     console.log(err);
