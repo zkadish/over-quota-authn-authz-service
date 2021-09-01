@@ -2,6 +2,10 @@ const frameWorks = require('../services/frameWorks');
 
 const provisionUser = async (user) => {
   try {
+    // Remove when live - get and post Events for dev testing
+    const events = await frameWorks.getEvents(user);
+    await frameWorks.postEvents(user, { events });
+
     // Get default talk tracks, replace account_id and generate new talk track ids.
     const talkTracks = await frameWorks.getTalkTracks(user);
     // Create the new user's talk tracks

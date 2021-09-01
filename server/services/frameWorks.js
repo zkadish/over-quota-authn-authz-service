@@ -1,11 +1,61 @@
 const fetch = require("node-fetch");
 const axios = require('axios');
 const { v4 } = require('uuid');
-
 const uuid = () => v4().toString().replace(/-/g, '');
 
 /**
- * These functions are a part of use provisioning and
+ * These functions are intended as helpers to use and test Call Events
+ * only get fired on user password creation...
+ */
+
+ const getEvents = async (user) => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: 'http://localhost:9999/api/v1/frameworks/events',
+      headers: {
+        'Content-Type': 'application/json',
+        'user-account-id': 'all-accounts',
+        // Authorization: auth.accessToken,
+      }
+    });
+    // sanitize and update the dto
+    const { events } = response.data;
+    const userEvents = events.map((e, i) => {
+      const event = { ...e };
+      delete event._id;
+      // event.id = uuid();
+      event.account_id = user.account_id;
+      return event;
+    });
+    return userEvents;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const postEvents = async (user, events) => {
+  try {
+    const response = await axios({
+      method: 'post',
+      url: 'http://localhost:9999/api/v1/frameworks/events',
+      data: events,
+      headers: {
+        'Content-Type': 'application/json',
+        'user-account-id': user.account_id,
+        // Authorization: auth.accessToken,
+      }
+    });
+  
+    const { data } = response;
+    return data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+/**
+ * These functions are a part of user provisioning and
  * only get fired on user password creation...
  */
 
@@ -354,6 +404,8 @@ const postElements = async (elements) => {
 };
 
 module.exports = {
+  getEvents,
+  postEvents,
   getTalkTracks,
   postTalkTracks,
   getBattleCards,
