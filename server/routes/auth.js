@@ -7,7 +7,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { jwtSecret } = require('../config/mongo');
 const crypto = require('crypto');
-const { v4 } = require('uuid');
 
 const User = require('../model/User');
 const PasswordReset = require('../model/PasswordReset');
@@ -16,6 +15,7 @@ const Refresh = require('../model/Refresh');
 const { sendEmail } = require('../nodemailer/nodemailer');
 const { sanitizeUser } = require('../utils/authn');
 const provisionUser = require('../utils/provisionUser');
+const { uuid } = require('../utils/data');
 
 /**
  * @method - POST
@@ -40,7 +40,7 @@ const provisionUser = require('../utils/provisionUser');
         // create and save the user, redirect to create password and return user to FE
         // note: user only has an email and an account number at this point, and doesn't have a password yet...
         const newUser = req.body;
-        newUser.account_id = v4().toString().replace(/-/g, '');
+        newUser.account_id = uuid();
         const user = await User.create(newUser);
         // once the email is saved and the use is created redirect them to the password creation page
         return res.status(200).json({ redirect: 'CREATE_PASSWORD', user });
@@ -90,7 +90,6 @@ const provisionUser = require('../utils/provisionUser');
     return true;
   }),
   async (req, res) => {
-    console.log('/create-password')
     try {
       const errors = await validationResult(req);
       if (!errors.isEmpty()) throw errors;
@@ -190,9 +189,10 @@ router.post(
       // Respond with accessToken and user DTO.
       res.status(200).json({ authenticated: true, accessToken, user: userCopy });
     } catch (error) {
-      console.log(error)
-      if (typeof error === 'string') return res.status(400).json({ error });
-      return res.status(400).json({ errors: error.array() });
+      console.log(error.array()[0])
+      return res.status(403).json({ message: 'Enter a valid email.' });
+      // if (typeof error === 'string') return res.status(400).json({ error });
+      // return res.status(400).json({ errors: error.array() });
     };
   }
 );
@@ -294,7 +294,7 @@ router.post(
       }
       // Create password reset token and save in collection with user
       // if a user record exists replace with new token
-      const resetToken = v4().toString().replace(/-/g, '');
+      const resetToken = uuid();
       PasswordReset.updateOne({
         user: userExists._id
       }, {
@@ -374,9 +374,6 @@ router.post(
       const { password } = req.body;
       const { token } = req.params;
       const passwordReset = await PasswordReset.findOne({ token });
-      // console.log('/reset-password')
-      // console.log(token)
-      // console.log(passwordReset)
 
       if (!passwordReset) {
         throw 'Reset link has expired.';

@@ -93,7 +93,6 @@ const provisionUser = async (user) => {
       if (i >= 139 && i <= 142) blocks[42].elements.push(elements[i].id);
     };
 
-    // TODO: add battle cards and talk tracks
     // Create the new users default templates
     await frameWorks.postTemplates({ templates });
     // Create the new users default blocks

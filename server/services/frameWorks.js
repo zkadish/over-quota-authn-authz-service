@@ -1,7 +1,85 @@
 const fetch = require("node-fetch");
 const axios = require('axios');
-const { v4 } = require('uuid');
-const uuid = () => v4().toString().replace(/-/g, '');
+const { uuid } = require('../utils/data');
+
+const weekday = dateObj => {
+  let day = null;
+  switch (dateObj.getDay()) {
+    case 0:
+      day = 'Sunday';
+      break;
+    case 1:
+      day = 'Monday';
+      break;
+    case 2:
+      day = 'Tuesday';
+      break;
+    case 3:
+      day = 'Wednesday';
+      break;
+    case 4:
+      day = 'Thursday';
+      break;
+    case 5:
+      day = 'Friday';
+      break;
+    default:
+      day = 'Saturday';
+  }
+
+  return day;
+};
+const getMonth = dateObj => {
+  let month = null;
+  switch (dateObj.getMonth()) {
+    case 0:
+      month = 'January';
+      break;
+    case 1:
+      month = 'February';
+      break;
+    case 2:
+      month = 'March';
+      break;
+    case 3:
+      month = 'April';
+      break;
+    case 4:
+      month = 'May';
+      break;
+    case 5:
+      month = 'June';
+      break;
+    case 6:
+      month = 'July';
+      break;
+    case 7:
+      month = 'August';
+      break;
+    case 8:
+      month = 'September';
+      break;
+    case 9:
+      month = 'October';
+      break;
+    case 10:
+      month = 'November';
+      break;
+    default:
+      month = 'December';
+  }
+  return month;
+};
+const getTodayOffSet = (offSet = 0) => {
+  const dateObj = new Date();
+  const offSetObj = new Date(dateObj.setDate(dateObj.getDate() + offSet));
+  const date = offSetObj.getDate();
+  const year = offSetObj.getFullYear();
+  return {
+    date: `${weekday(offSetObj)}, ${getMonth(offSetObj)} ${date} ${year}`,
+    dateObj: offSetObj,
+  };
+};
 
 /**
  * These functions are intended as helpers to use and test Call Events
@@ -24,8 +102,11 @@ const uuid = () => v4().toString().replace(/-/g, '');
     const userEvents = events.map((e, i) => {
       const event = { ...e };
       delete event._id;
-      // event.id = uuid();
+      // event.id = uuid(); // the id is being used to match it with the appropriate day
       event.account_id = user.account_id;
+      event.dateObj = getTodayOffSet(-1).dateObj;
+      event.start.date = getTodayOffSet(-1).date;
+      event.end.date = getTodayOffSet(-1).date;
       return event;
     });
     return userEvents;
@@ -73,9 +154,11 @@ const getTalkTracks = async (user) => {
     // sanitize and update the dto
     const { talkTracks } = response.data;
     const userTalkTracks = talkTracks.map((t, i) => {
+      // const id = uuid();
       const talkTrack = { ...t };
       delete talkTrack._id;
       talkTrack.id = uuid();
+      talkTrack.library_id = uuid();
       talkTrack.account_id = user.account_id;
       return talkTrack;
     });
@@ -119,10 +202,12 @@ const getBattleCards = async (user) => {
     // sanitize and update the dto
     const { battleCards } = response.data;
     const userBattleCards = battleCards.map((b, i) => {
+      // const id = uuid();
       const battleCard = { ...b };
       delete battleCard._id;
       battleCard['talk-tracks'] = [];
       battleCard.id = uuid();
+      battleCard.library_id = uuid();
       battleCard.account_id = user.account_id;
       return battleCard;
     });
@@ -169,6 +254,7 @@ const getTemplateOrder = async (user) => {
     data.account_id = user.account_id;
     data.id = uuid();
     data.templates = data.templates.map(() => uuid());
+    data.system = false;
     return data;
   } catch (err) {
     console.log(err);
@@ -224,8 +310,6 @@ const getTemplates = async (user, templateOrder) => {
 
 const postTemplates = async (templates, blocks) => {
   try {
-    // console.log(templates);
-    console.log(templates);
     const response = await axios({
       method: 'post',
       url: 'http://localhost:9999/api/v1/frameworks/templates',
@@ -316,7 +400,10 @@ const getElements = async (user, blocks, talkTracks, battleCards) => {
           // we need the talk tracks id to be the elements id
           // so that every instance of the talk track has the 
           // talk track id from the library.
-          element.id = talkTracks[element.id].id;
+          // TODO: change the element.id to a unique uuid after changing tracking reference over to library_id
+          // element.id = talkTracks[element.id].id;
+          element.library_id = talkTracks[element.id].library_id;
+          element.id = uuid();
           break;
         case 'battle-card':
           // the element's id is the battle cards index
@@ -324,7 +411,10 @@ const getElements = async (user, blocks, talkTracks, battleCards) => {
           // so that every instance of the battle card has the 
           // battle card id from the library.
           element['talk-tracks'] = battleCards[element.id]['talk-tracks'];
-          element.id = battleCards[element.id].id;
+          // TODO: change the element.id to a unique uuid after changing tracking reference over to library_id
+          // element.id = battleCards[element.id].id;
+          element.library_id = battleCards[element.id].library_id;
+          element.id = uuid();
           break;
         default:
           element.id = uuid();
@@ -383,7 +473,6 @@ const getElements = async (user, blocks, talkTracks, battleCards) => {
 };
 
 const postElements = async (elements) => {
-  // console.log(templates);
   try {
     const response = await axios({
       method: 'post',
