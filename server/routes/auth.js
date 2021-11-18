@@ -219,7 +219,8 @@ router.get('/authn', (req, res) => {
 
   // const { user } = req.session;
   console.log('{ authenticated: true }');
-  console.log(req.sessionID);
+  console.log('sessionID', req.sessionID);
+  console.log('session', req.session);
   mongoSessionStore.touch(req.sessionID, req.session, async error => {
     try {
       console.log('mongoSessionStore error: ', error);

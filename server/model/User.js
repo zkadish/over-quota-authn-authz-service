@@ -128,7 +128,11 @@ const userSchema = new Schema({
   avatar: {
     type: String,
     default: '',
-  }
+  },
+  googleCalendarAuth: {
+    type: Object,
+    default: null,
+  },
 });
 userSchema.plugin(require('mongoose-beautiful-unique-validation'));
 userSchema.pre('save', async function () {
