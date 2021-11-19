@@ -15,6 +15,7 @@ const logger = require('morgan');
 // const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth');
+const googleRouter = require('./routes/googleIntegration');
 
 // TODO: if you don't wind up using mailchip remove remove it
 // require('./nodemailer/nodemailer');
@@ -88,6 +89,7 @@ app.use((req, res, next) => {
 // app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/google', googleRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
