@@ -13,9 +13,9 @@ const oAuth2Client = new google.auth.OAuth2(
 oAuth2Client.on('tokens', (tokens) => {
   if (tokens.refresh_token) {
     // store the refresh_token in my database!
-    console.log(tokens.refresh_token);
+    console.log('refresh_token:', tokens.refresh_token);
   }
-  console.log(tokens.access_token);
+  console.log('access_token:', tokens.access_token);
 });
 
 /* GET home page. */
@@ -39,7 +39,7 @@ router.get('/v1/calendar/auth', async (req, res, next) => {
 });
 
 router.post('/v1/calendar/auth', async (req, res, next) => {
-  console.log(req.body);
+  console.log('POST: /v1/calendar/auth');
 
   // This will provide an object with the access_token and refresh_token.
   // Save these somewhere safe so they can be used at a later time.
@@ -49,6 +49,7 @@ router.post('/v1/calendar/auth', async (req, res, next) => {
                             });
   // if no errors authorize the client
   oAuth2Client.setCredentials(getTokenRes.tokens);
+  // add Google auth object to User in data base
 
   const { email } = req.body;
   const user = await User.findOne({ email });
