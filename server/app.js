@@ -5,6 +5,7 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const createError = require('http-errors');
 const express = require('express');
+const cors = require('cors');
 const compression = require("compression");
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
@@ -33,7 +34,7 @@ const app = express();
 // mongoSessionStore.on('error', function(error) {
 //   console.log('mongoSessionStore', error);
 // });
-
+console.log('app.get("env") = ', app.get('env'));
 let cookieSecure = false;
 if (app.get('env') === 'production') {
   app.set('trust proxy', 1);
@@ -47,6 +48,7 @@ app.disable('x-powered-by');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+app.use(cors()) // cors is set for every route
 app.use(logger('dev'));
 app.use(compression())
 app.use(express.json());

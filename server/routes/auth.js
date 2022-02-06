@@ -187,6 +187,8 @@ router.post(
       req.session.user_id = user._id;
       
       // Respond with accessToken and user DTO.
+      console.log(res.header());
+      console.log(res.getHeaders());
       res.status(200).json({ authenticated: true, accessToken, user: userCopy });
     } catch (error) {
       console.log(error.array()[0])
