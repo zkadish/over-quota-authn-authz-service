@@ -1,5 +1,5 @@
 {
-  "name": "authn-authz-server",
+  "name": "over-quota-authn-authz-service",
   "version": "1.0.0",
   "private": true,
   "scripts": {
