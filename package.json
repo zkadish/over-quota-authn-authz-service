@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "nodemon ./server/bin/www",
-    "debug": "nodemon --inspect=9231 --inspect-brk=9231 ./server/bin/www",
+    "local": "MODE=local nodemon ./server/bin/www",
+    "dev": "NODE_ENV=production MODE=dev nodemon ./server/bin/www",
+    "debug": "MODE=local nodemon --inspect=9231 --inspect-brk=9231 ./server/bin/www",
     "debug:docker": "nodemon --inspect=0.0.0.0 ./server/bin/www",
     "start": "node ./server/bin/www"
   },
@@ -21,7 +22,7 @@
     "dotenv": "^8.2.0",
     "ejs": "~2.6.1",
     "express": "~4.16.1",
-    "express-session": "^1.17.1",
+    "express-session": "^1.17.2",
     "express-validator": "^6.9.2",
     "googleapis": "^88.2.0",
     "http-errors": "~1.6.3",

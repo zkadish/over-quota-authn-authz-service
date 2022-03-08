@@ -13,7 +13,7 @@ const logger = require('morgan');
 // const MongoDBStore = require('connect-mongodb-session')(session);
 // const MongoStore = require('connect-mongo').default;
 
-// const indexRouter = require('./routes/index');
+const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth');
 const googleRouter = require('./routes/googleIntegration');
@@ -24,31 +24,26 @@ const googleRouter = require('./routes/googleIntegration');
 
 const db = initMongo();
 const app = express();
-// const mongoSessionStore = MongoStore.create({ mongoUrl: 'mongodb://localhost:27017/serverSessions' });
-// const mongoSessionStore = new MongoDBStore({
-//   // TODO: make sure to use env to pass connection string
-//   uri: 'mongodb://localhost:27017/connect_mongodb_session_dev',
-//   collection: 'mySessions'
-// });
 
-// mongoSessionStore.on('error', function(error) {
-//   console.log('mongoSessionStore', error);
-// });
 console.log('app.get("env") = ', app.get('env'));
+
 let cookieSecure = false;
+let cookieDomain = 'localhost';
+// TODO: pass the correct env vars with pm2 config
 if (app.get('env') === 'production') {
-  app.set('trust proxy', 1);
+  // app.set('trust proxy', true);
   cookieSecure = true;
+  cookieDomain = '.overquota.io';
 }
 
 app.disable('x-powered-by');
+// app.set('trust proxy', 1);
 
 // view engine setup
 // TODO: if you don't use views remove the view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(cors()) // cors is set for every route
 app.use(logger('dev'));
 app.use(compression())
 app.use(express.json());
@@ -59,23 +54,37 @@ app.use(cookieParser());
 app.use(session({
   genid: (req) => {
     console.log('Inside the session middleware');
-    console.log(req.sessionID);
+    console.log('req.sessionID:', req.sessionID);
     return uuidv4(); // use UUIDs for session IDs
   },
   secret: process.env.APP_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  unset: 'destroy',
   cookie: {
-    // secure: cookieSecure,
+    domain: 'localhost', // '.overquota.io'
     secure: false,
+    // sameSite: 'none',
     // maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
     // maxAge: 1000 * 60, // 1 min
     maxAge: 1000 * 60 * 30, // 30 min
   },
   // rolling: true,
   store: mongoSessionStore,
-  // store: MongoStore.create({ mongoUrl: 'mongodb://localhost:27017/serverSessions' }),
-  resave: true,
-  saveUninitialized: false,
 }));
+
+// Add cors to the headers of every request endpoint 
+// Client also needs `axios.defaults.withCredentials = true;` on every request
+// or session cookie won't get passed to the client
+app.use(cors({
+  origin: [
+    'http://dev.auth.service.overquota.io',
+    'http://dev.auth.spa.overquota.io',
+  ],
+  credentials: true,
+  exposedHeaders: ['set-cookie']
+})) // cors is set for every route
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // remove the trialing slash from incoming routes
@@ -88,7 +97,7 @@ app.use((req, res, next) => {
 	}
 });
 
-// app.use('/', indexRouter);
+app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/google', googleRouter);
