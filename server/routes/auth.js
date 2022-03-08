@@ -199,7 +199,9 @@ router.post(
   }
 );
 
-router.get('/authn', (req, res) => {
+router.get(
+  '/authn',
+  (req, res) => {
   console.log('/authn')
   console.log('cookie.maxAge: ', req.session.cookie.maxAge);
 
@@ -213,11 +215,11 @@ router.get('/authn', (req, res) => {
     return true;
   };
 
-  // if (!req.session) {
-  //   console.log('!req.session', req.session);
-  //   destroySession();
-  //   return;
-  // }
+  if (!req.session) {
+    console.log('!req.session', req.session);
+    destroySession();
+    return;
+  }
 
   // const { user } = req.session;
   console.log('{ authenticated: true }');
