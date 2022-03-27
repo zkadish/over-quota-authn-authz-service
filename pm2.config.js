@@ -1,12 +1,13 @@
 module.exports = {
   apps : [{
-    name   : "over-quota-authn-authz-service",
+    name   : "dev.auth.service.overquota.io",
     script : "./server/bin/www"
   }],
+  env_development: {
+    NODE_ENV: "production",
+    MODE: "dev",
+  },
   env_production: {
     NODE_ENV: "production"
-  },
-  env_development: {
-    NODE_ENV: "development"
   },
 };

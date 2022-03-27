@@ -28,12 +28,22 @@ const app = express();
 console.log('app.get("env") = ', app.get('env'));
 
 let cookieSecure = false;
-let cookieDomain = 'localhost';
+let cookieDomain = '';
 // TODO: pass the correct env vars with pm2 config
+if (app.get('env') === 'local') {
+  // app.set('trust proxy', true);
+  cookieDomain = '';
+  cookieSecure = false;
+}
+if (app.get('env') === 'development') {
+  // app.set('trust proxy', true);
+  cookieDomain = '.overquota.io';
+  cookieSecure = true;
+}
 if (app.get('env') === 'production') {
   // app.set('trust proxy', true);
-  cookieSecure = true;
   cookieDomain = '.overquota.io';
+  cookieSecure = true;
 }
 
 app.disable('x-powered-by');
@@ -62,7 +72,7 @@ app.use(session({
   saveUninitialized: false,
   unset: 'destroy',
   cookie: {
-    domain: 'localhost', // '.overquota.io'
+    domain: '', // '.overquota.io'
     secure: false,
     // sameSite: 'none',
     // maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
@@ -80,16 +90,27 @@ app.use(cors({
   origin: [
     'http://dev.auth.service.overquota.io',
     'http://dev.auth.spa.overquota.io',
+    'https://dev.auth.service.overquota.io',
+    'https://dev.auth.spa.overquota.io',
   ],
   credentials: true,
   exposedHeaders: ['set-cookie']
-})) // cors is set for every route
+})); // cors is set for every route
+// app.options('*', cors()) // cors is set for every preflight route
+// app.use(function(req, res, next) {
+//   res.header("Access-Control-Allow-Credentials", true);
+//   // res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-HTTP-Method-Override");
+//   res.header("Access-Control-Allow-Methods", "GET,POST,DELETE,PUT,OPTIONS");
+//   next();
+// });
 
 app.use(express.static(path.join(__dirname, 'public')));
 
 // remove the trialing slash from incoming routes
 app.use((req, res, next) => {
-	if (req.path.substr(-1) == '/' && req.path.length > 1) {
+	if (req.path.endsWith('/') && req.path.length > 1) {
+  // if (req.path.substr(-1) == '/' && req.path.length > 1) {
 		const query = req.url.slice(req.path.length)
 		res.redirect(301, req.path.slice(0, -1) + query)
 	} else {

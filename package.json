@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "local": "MODE=local nodemon ./server/bin/www",
-    "dev": "NODE_ENV=production MODE=dev nodemon ./server/bin/www",
-    "debug": "MODE=local nodemon --inspect=9231 --inspect-brk=9231 ./server/bin/www",
+    "local": "NODE_ENV=local MODE=local nodemon ./server/bin/www",
+    "dev": "NODE_ENV=development MODE=dev nodemon ./server/bin/www",
+    "debug": "NODE_ENV=local MODE=local nodemon --inspect=9231 --inspect-brk=9231 ./server/bin/www",
     "debug:docker": "nodemon --inspect=0.0.0.0 ./server/bin/www",
     "start": "node ./server/bin/www"
   },
