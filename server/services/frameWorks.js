@@ -2,6 +2,11 @@ const fetch = require("node-fetch");
 const axios = require('axios');
 const { uuid } = require('../utils/data');
 
+let domain = 'http://localhost:9999';
+// if (process.env.NODE_ENV = 'development') {
+//   domain =  'https://dev.frameworks.service.overquota.io';
+// }
+
 const weekday = dateObj => {
   let day = null;
   switch (dateObj.getDay()) {
@@ -90,7 +95,7 @@ const getTodayOffSet = (offSet = 0) => {
   try {
     const response = await axios({
       method: 'get',
-      url: 'http://localhost:9999/api/v1/frameworks/events',
+      url: `${domain}/api/v1/frameworks/events`,
       headers: {
         'Content-Type': 'application/json',
         'user-account-id': 'all-accounts',
@@ -119,7 +124,7 @@ const postEvents = async (user, events) => {
   try {
     const response = await axios({
       method: 'post',
-      url: 'http://localhost:9999/api/v1/frameworks/events',
+      url: `${domain}/api/v1/frameworks/events`,
       data: events,
       headers: {
         'Content-Type': 'application/json',
@@ -144,7 +149,7 @@ const getTalkTracks = async (user) => {
   try {
     const response = await axios({
       method: 'get',
-      url: 'http://localhost:9999/api/v1/frameworks/talk-tracks',
+      url: `${domain}/api/v1/frameworks/talk-tracks`,
       headers: {
         'Content-Type': 'application/json',
         'user-account-id': 'all-accounts',
@@ -172,7 +177,7 @@ const postTalkTracks = async (user, talkTracks) => {
   try {
     const response = await axios({
       method: 'post',
-      url: 'http://localhost:9999/api/v1/frameworks/talk-tracks',
+      url: `${domain}/api/v1/frameworks/talk-tracks`,
       data: talkTracks,
       headers: {
         'Content-Type': 'application/json',
@@ -192,7 +197,7 @@ const getBattleCards = async (user) => {
   try {
     const response = await axios({
       method: 'get',
-      url: 'http://localhost:9999/api/v1/frameworks/battle-cards',
+      url: `${domain}/api/v1/frameworks/battle-cards`,
       headers: {
         'Content-Type': 'application/json',
         'user-account-id': 'all-accounts',
@@ -221,7 +226,7 @@ const postBattleCards = async (user, battleCards) => {
   try {
     const response = await axios({
       method: 'post',
-      url: 'http://localhost:9999/api/v1/frameworks/battle-cards',
+      url: `${domain}/api/v1/frameworks/battle-cards`,
       data: battleCards,
       headers: {
         'Content-Type': 'application/json',
@@ -241,7 +246,7 @@ const getTemplateOrder = async (user) => {
   try {
     const response = await axios({
       method: 'get',
-      url: 'http://localhost:9999/api/v1/frameworks/template-order',
+      url: `${domain}/api/v1/frameworks/template-order`,
       headers: {
         'Content-Type': 'application/json',
         'user-account-id': 'all-accounts',
@@ -265,7 +270,7 @@ const postTemplateOrder = async (user, templateOrder) => {
   try {
     const response = await axios({
       method: 'post',
-      url: 'http://localhost:9999/api/v1/frameworks/template-order',
+      url: `${domain}/api/v1/frameworks/template-order`,
       data: templateOrder,
       headers: {
         'Content-Type': 'application/json',
@@ -285,7 +290,7 @@ const getTemplates = async (user, templateOrder) => {
   try {
     const response = await axios({
       method: 'get',
-      url: 'http://localhost:9999/api/v1/frameworks/templates',
+      url: `${domain}/api/v1/frameworks/templates`,
       headers: {
         'Content-Type': 'application/json',
         'user-account-id': 'all-accounts',
@@ -312,7 +317,7 @@ const postTemplates = async (templates, blocks) => {
   try {
     const response = await axios({
       method: 'post',
-      url: 'http://localhost:9999/api/v1/frameworks/templates',
+      url: `${domain}/api/v1/frameworks/templates`,
       data: templates,
       headers: {
         'Content-Type': 'application/json',
@@ -332,7 +337,7 @@ const getBlocks = async (user, templates) => {
   try {
     const response = await axios({
       method: 'get',
-      url: 'http://localhost:9999/api/v1/frameworks/blocks',
+      url: `${domain}/api/v1/frameworks/blocks`,
       headers: {
         'Content-Type': 'application/json',
         'user-account-id': 'all-accounts',
@@ -362,7 +367,7 @@ const postBlocks = async (blocks) => {
   try {
     const response = await axios({
       method: 'post',
-      url: 'http://localhost:9999/api/v1/frameworks/blocks',
+      url: `${domain}/api/v1/frameworks/blocks`,
       data: blocks,
       headers: {
         'Content-Type': 'application/json',
@@ -382,7 +387,7 @@ const getElements = async (user, blocks, talkTracks, battleCards) => {
   try {
     const response = await axios({
       method: 'get',
-      url: 'http://localhost:9999/api/v1/frameworks/elements',
+      url: `${domain}/api/v1/frameworks/elements`,
       headers: {
         'Content-Type': 'application/json',
         'user-account-id': 'all-accounts',
@@ -476,7 +481,7 @@ const postElements = async (elements) => {
   try {
     const response = await axios({
       method: 'post',
-      url: 'http://localhost:9999/api/v1/frameworks/elements',
+      url: `${domain}/api/v1/frameworks/elements`,
       data: elements,
       headers: {
         'Content-Type': 'application/json',

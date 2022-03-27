@@ -348,7 +348,9 @@ router.post(
  * @param - /validate-reset/:token
  * @description - validates token and returns the user in res body
  */
-router.get('/validate-reset/:token', async (req, res) => {
+router.get(
+  '/validate-reset/:token',
+  async (req, res) => {
   try {
     const token = req.params.token;
     const passwordReset = await PasswordReset.findOne({ token });
