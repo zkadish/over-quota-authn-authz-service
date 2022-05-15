@@ -88,9 +88,9 @@ const getTodayOffSet = (offSet = 0) => {
 
 /**
  * These functions are intended as helpers to use and test Call Events
- * only get fired on user password creation...
+ * This function only gets fired on user password creation...
  */
-
+// TODO: rename this function provisionDefaultEvents
  const getEvents = async (user) => {
   try {
     const response = await axios({
