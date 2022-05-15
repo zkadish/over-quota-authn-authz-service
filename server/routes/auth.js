@@ -71,6 +71,7 @@ const { uuid } = require('../utils/data');
  * @method - POST
  * @param - /create-password
  * @description - Add a password to the registered email
+ * @executes - provisionUser()
  * @note - user becomes active...
  */
  router.post(

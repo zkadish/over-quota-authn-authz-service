@@ -72,10 +72,11 @@ app.use(session({
   saveUninitialized: false,
   unset: 'destroy',
   cookie: {
-    domain: '', // '.overquota.io'
+    domain: 'localhost', // '.overquota.io'
     secure: false,
     // sameSite: 'none',
     // maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+    // maxAge: 1000 * 5, // 5 sec
     // maxAge: 1000 * 60, // 1 min
     maxAge: 1000 * 60 * 30, // 30 min
   },

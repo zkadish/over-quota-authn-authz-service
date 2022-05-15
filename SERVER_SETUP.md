@@ -14,7 +14,6 @@
   
 - Used this post to install nginx <https://www.linuxbabe.com/ubuntu/install-nginx-latest-version-ubuntu-18-04>
 
-
 ## User PM2 to launch the application
 
 - $ NODE_ENV=production pm2 start ecosystem.config.js

@@ -47,7 +47,7 @@ The Sales Notes Framework Service Server contains CRUD micro service api for Fra
 - docker exec -it {container} bash
 
 - open Sales Notes AuthN AuthZ server in the browser for a quick health check
-- http://localhost:7070
+- http://localhost:7777
 
 ### To run the server in debug mode
 
