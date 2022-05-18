@@ -15,6 +15,7 @@ const logger = require('morgan');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const userAccountRouter = require('./routes/userAccount');
 const authRouter = require('./routes/auth');
 const googleRouter = require('./routes/googleIntegration');
 
@@ -121,6 +122,7 @@ app.use((req, res, next) => {
 
 app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/user-account/v1', userAccountRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/google', googleRouter);
 

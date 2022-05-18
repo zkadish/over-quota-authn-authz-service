@@ -3,6 +3,7 @@ var router = express.Router();
 const {google} = require('googleapis');
 
 const User = require('../model/User');
+const UserAccount = require('../model/UserAccount');
 
 const oAuth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
@@ -52,11 +53,12 @@ router.post('/v1/calendar/auth', async (req, res, next) => {
   oAuth2Client.setCredentials(getTokenRes.tokens);
   // add Google auth object to User in data base
 
-  const { email } = req.body.user;
-  const user = await User.findOne({ email });
-  if (user) {
-    user.googleCalendarAuth = getTokenRes.tokens;
-    user.save();
+  const { account_id } = req.body.user;
+  const userAccount = await UserAccount.findOne({ account_id });
+ 
+  if (userAccount) {
+    userAccount.googleCalendarAuth = getTokenRes.tokens;
+    userAccount.save();
   }
 
   const calendar = await google.calendar({ version: 'v3', auth: oAuth2Client });
@@ -87,15 +89,18 @@ router.post('/v1/calendar/auth', async (req, res, next) => {
 /* GET google calendar events */
 router.get('/v1/calendar/events', async (req, res, next) => {
   console.log('GET: calendar/events');
-  const { body: { user, endDate } } = req;
+  const { body: { userSettings, endDate } } = req;
   const timeMin = (new Date()).toISOString(); // today
   const timeMax = new Date(endDate); // days in the future
 
-  if (!user.googleCalendarAuth) {
-    return res.status(403).json({ message: 'Error: User has not authorized a google calendar.' });
+  if (!userSettings.googleCalendarAuth) {
+    return res.status(200).json({
+      message: 'Error: User has not authorized a google calendar.',
+      googleCalEvents: [],
+    });
   }
 
-  oAuth2Client.setCredentials(user.googleCalendarAuth);
+  oAuth2Client.setCredentials(userSettings.googleCalendarAuth);
 
   const calendar = await google.calendar({ version: 'v3', auth: oAuth2Client });
 

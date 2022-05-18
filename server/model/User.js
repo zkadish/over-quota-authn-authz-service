@@ -12,10 +12,6 @@ const userSchema = new Schema({
     type: String,
     default: '',
   },
-  company_name: {
-    type: String,
-    default: '',
-  },
   corporate_id: {
     type: String,
     // must be unique, undefined or null
@@ -81,10 +77,6 @@ const userSchema = new Schema({
     type: Date,
     default: Date.now(),
   },
-  account_owner: {
-    type: Boolean,
-    default: true,
-  },
   account_type: { // license-type?
     type: String,
     default: 'test-user', // single-user, multi-user, test-user, guest-user
@@ -109,10 +101,6 @@ const userSchema = new Schema({
     type: Boolean,
     default: false,
   },
-  company_address: {
-    type: String,
-    default: '',
-  },
   alt_address: {
     type: String,
     default: '',
@@ -128,10 +116,6 @@ const userSchema = new Schema({
   avatar: {
     type: String,
     default: '',
-  },
-  googleCalendarAuth: {
-    type: Object,
-    default: null,
   },
 });
 userSchema.plugin(require('mongoose-beautiful-unique-validation'));

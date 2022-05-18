@@ -9,6 +9,7 @@ const { jwtSecret } = require('../config/mongo');
 const crypto = require('crypto');
 
 const User = require('../model/User');
+const UserAccount = require('../model/UserAccount');
 const PasswordReset = require('../model/PasswordReset');
 const Refresh = require('../model/Refresh');
 
@@ -105,6 +106,9 @@ const { uuid } = require('../utils/data');
         // provision user
         await provisionUser(user);
         const newUser = await user.save();
+
+        // TODO: move into provision user?
+        const userAccount = await UserAccount.create({ id: user.account_id, active: true });
 
         // redirect to the sign in page
         // TODO: pass updated user back to the client?
