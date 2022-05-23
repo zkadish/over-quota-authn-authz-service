@@ -1,11 +1,10 @@
-const fetch = require("node-fetch");
 const axios = require('axios');
 const { uuid } = require('../utils/data');
 
 let domain = 'http://localhost:9999';
-// if (process.env.NODE_ENV = 'development') {
-//   domain =  'https://dev.frameworks.service.overquota.io';
-// }
+if (process.env.NODE_ENV === 'development') {
+  domain =  'https://dev.frameworks.service.overquota.io';
+}
 
 const weekday = dateObj => {
   let day = null;

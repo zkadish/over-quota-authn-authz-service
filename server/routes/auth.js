@@ -163,7 +163,11 @@ router.post(
       // the first password parameter is the one in plain text, 
       // and the second user.password is the hashed password
       const correct = await bcrypt.compare(password, user.password);
-      if (!correct) throw 'The password is incorrect';
+      if (!correct) {
+        // throw 'The password is incorrect';
+        res.status(403).json({ error: 'The password is incorrect' });
+        return;
+      }
   
       // NOTE: never send refresh tokens to the client!
       const refreshToken = crypto.randomBytes(32).toString('hex');
@@ -196,8 +200,9 @@ router.post(
       console.log(res.getHeaders());
       res.status(200).json({ authenticated: true, accessToken, user: userCopy });
     } catch (error) {
-      console.log(error.array()[0])
-      return res.status(403).json({ message: 'Enter a valid email.' });
+      console.log(error)
+      // return res.status(403).json({ message: 'Enter a valid email.' });
+      return res.status(403).send({ error: 'Enter a valid email.' });
       // if (typeof error === 'string') return res.status(400).json({ error });
       // return res.status(400).json({ errors: error.array() });
     };

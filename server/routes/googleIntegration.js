@@ -1,8 +1,10 @@
 var express = require('express');
 var router = express.Router();
-const {google} = require('googleapis');
+const { uuid } = require('../utils/data');
 
-const User = require('../model/User');
+const { google } = require('googleapis');
+const { watchCalendarEvents } = require('../services/googleIntegration');
+
 const UserAccount = require('../model/UserAccount');
 
 const oAuth2Client = new google.auth.OAuth2(
@@ -39,6 +41,7 @@ router.get('/v1/calendar/auth', async (req, res, next) => {
   return res.status(200).json({ googleCalendarRedirectUrl: url });
 });
 
+// POST set google auth
 router.post('/v1/calendar/auth', async (req, res, next) => {
   console.log('POST: /v1/calendar/auth');
 
@@ -51,8 +54,8 @@ router.post('/v1/calendar/auth', async (req, res, next) => {
                             });
   // if no errors authorize the client
   oAuth2Client.setCredentials(getTokenRes.tokens);
-  // add Google auth object to User in data base
 
+  // add Google auth object to User in data base
   const { account_id } = req.body.user;
   const userAccount = await UserAccount.findOne({ account_id });
  
@@ -62,6 +65,25 @@ router.post('/v1/calendar/auth', async (req, res, next) => {
   }
 
   const calendar = await google.calendar({ version: 'v3', auth: oAuth2Client });
+
+  // set up push notification for watching calendar events
+  // const date = new Date();
+  // const expiration = date.setDate(date.getDate() + 1); // currently will expire in one day
+  // const notifications = watchCalendarEvents(
+  //   getTokenRes.tokens.access_token,
+  //   {
+  //   id: uuid(),
+  //   type: 'web_hook',
+  //   address: 'https://dev.auth.overquota.io/api/google/v1/calendar/push/notification',
+  //   token: 'target=myApp-test',
+  //   expiration,
+  // });
+
+  // notifications.then(data => {
+  //   console.log(data);
+  // }).catch(err => {
+  //   console.log(err);
+  // });
 
   calendar.events.list({
     calendarId: 'primary',
@@ -89,8 +111,13 @@ router.post('/v1/calendar/auth', async (req, res, next) => {
 /* GET google calendar events */
 router.get('/v1/calendar/events', async (req, res, next) => {
   console.log('GET: calendar/events');
-  const { body: { userSettings, endDate } } = req;
-  const timeMin = (new Date()).toISOString(); // today
+  const { body: { userSettings, today, endDate } } = req;
+  // const timeMin = (new Date()).toISOString(); // today
+  const timeMin = new Date(today).toISOString(); // today
+  // timeMin.setHours(00);
+  // timeMin.setSeconds(00);
+  // timeMin.setMinutes(00);
+
   const timeMax = new Date(endDate); // days in the future
 
   if (!userSettings.googleCalendarAuth) {
@@ -126,7 +153,25 @@ router.get('/v1/calendar/events', async (req, res, next) => {
     }
     return res.status(200).json({ googleCalEvents: events });
   });
+});
 
+/* POST google calendar watch receive notification */
+router.post('/v1/calendar/push/notification', async (req, res, next) => {
+  try {
+    const { headers, body } = req;
+
+    // await UserAccount.updateOne(
+    //   { account_id: headers['user-account-id'] },
+    //   body,
+    //   { runValidators: true },
+    // );
+
+    // const userAccount = await UserAccount.findOne({ account_id: headers['user-account-id'] });
+
+    res.status(200);
+  } catch (error) {
+    throw error;
+  }
 });
 
 module.exports = router;
