@@ -9,7 +9,7 @@ router.get('/account', async (req, res, next) => {
   try {
     const { headers } = req;
 
-    const userAccount = await UserAccount.findOne({ account_id: headers['user-account-id'] });
+    const userAccount = await UserAccount.findOne({ id: headers['user-account-id'] });
 
     res.status(200).json({ userAccount });
   } catch (error) {

@@ -14,8 +14,62 @@
   
 - Used this post to install nginx <https://www.linuxbabe.com/ubuntu/install-nginx-latest-version-ubuntu-18-04>
 
-## User PM2 to launch the application
+## For the secure session cookie to be passed to the server the follow config settings need to be set
 
-- $ NODE_ENV=production pm2 start ecosystem.config.js
+- nginx default.conf settings for reverse proxy
 
-- $ pm2 save
+````nginx
+location / {
+  proxy_set_header   X-Forwarded-For $remote_addr; # required to pass secure cookie
+  proxy_set_header   X-Forwarded-Proto $scheme; # required to pass secure cookie
+  proxy_set_header   Host $http_host;
+  proxy_pass   http://127.0.0.1:7777; # running node locally outside of docker
+  # proxy_pass         http://0.0.0.0:7777; # node is running at 0.0.0.0:7777 inside of docker
+}
+````
+
+- Express app settings
+  
+````javascript
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
+...
+app.use(cookieParser()); // required to pass secure cookie
+...
+app.set('trust proxy', true); // required to pass secure cookie
+...
+app.use(cors({
+  origin: ['https://domain.com', 'localhost'], // required to pass secure cookie
+  credentials: true, // required to pass secure cookie
+  exposedHeaders: ['set-cookie'] // required to pass secure cookie
+}));
+````
+
+- Express session cookie
+
+````javascript
+cookie: {
+  domain: cookieDomain, // '.viewportmedia.org' || 'localhost' // required to pass secure cookie
+  secure: cookieSecure, // true || false // required to pass secure cookie
+}
+````
+
+## Deploying changes to the live auth server
+
+- <https://dev.auth.service.viewportmedia.org/>
+
+- $ deploy/scp-devAuthService.sh
+
+- $ ssh zsysadmin@143.198.232.218
+
+- $ cd /var/appdata/authServiceDev/
+
+- $ npm ci
+  
+## Restart the node and nginx services
+
+- $ pm2 restart pm2.config.js --env development --attach && pm2 save
+
+- $ pm2 restart pm2.config.js --env production --attach && pm2 save
+
+- $ sudo systemctl restart nginx

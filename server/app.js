@@ -7,8 +7,8 @@ const createError = require('http-errors');
 const express = require('express');
 const cors = require('cors');
 const compression = require("compression");
-const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 // const MongoDBStore = require('connect-mongodb-session')(session);
 // const MongoStore = require('connect-mongo').default;
@@ -27,28 +27,31 @@ const db = initMongo();
 const app = express();
 
 console.log('app.get("env") = ', app.get('env'));
+console.log('process.env.APP_SECRET:', process.env.APP_SECRET);
 
-let cookieSecure = false;
 let cookieDomain = '';
-// TODO: pass the correct env vars with pm2 config
+let cookieSecure = false;
+let corsOrginUrls = ['localhost'];
+
 if (app.get('env') === 'local') {
-  // app.set('trust proxy', true);
   cookieDomain = '';
   cookieSecure = false;
+  corsOrginUrls = ['localhost'];
 }
 if (app.get('env') === 'development') {
-  // app.set('trust proxy', true);
-  cookieDomain = '.overquota.io';
+  app.set('trust proxy', true); // required to pass secure cookie
+  cookieDomain = '.viewportmedia.org';
   cookieSecure = true;
+  corsOrginUrls = ['https://dev.auth.spa.viewportmedia.org'];
 }
 if (app.get('env') === 'production') {
-  // app.set('trust proxy', true);
-  cookieDomain = '.overquota.io';
+  app.set('trust proxy', true); // required to pass secure cookie
+  cookieDomain = '.viewportmedia.org';
   cookieSecure = true;
+  corsOrginUrls = ['https://dev.auth.spa.viewportmedia.org'];
 }
 
 app.disable('x-powered-by');
-// app.set('trust proxy', 1);
 
 // view engine setup
 // TODO: if you don't use views remove the view engine setup
@@ -59,7 +62,7 @@ app.use(logger('dev'));
 app.use(compression())
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser()); // required to pass secure cookie
 
 // server session config
 app.use(session({
@@ -71,10 +74,10 @@ app.use(session({
   secret: process.env.APP_SECRET,
   resave: false,
   saveUninitialized: false,
-  unset: 'destroy',
+  // unset: 'destroy',
   cookie: {
-    domain: 'localhost', // '.overquota.io'
-    secure: false,
+    domain: cookieDomain, // '.viewportmedia.org' || 'localhost' // required to pass secure cookie
+    secure: cookieSecure, // true || false // required to pass secure cookie
     // sameSite: 'none',
     // maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
     // maxAge: 1000 * 5, // 5 sec
@@ -88,17 +91,14 @@ app.use(session({
 // Add cors to the headers of every request endpoint 
 // Client also needs `axios.defaults.withCredentials = true;` on every request
 // or session cookie won't get passed to the client
+console.log('corsOrginUrls:', corsOrginUrls);
 app.use(cors({
-  origin: [
-    'http://dev.auth.service.overquota.io',
-    'http://dev.auth.spa.overquota.io',
-    'https://dev.auth.service.overquota.io',
-    'https://dev.auth.spa.overquota.io',
-  ],
-  credentials: true,
-  exposedHeaders: ['set-cookie']
-})); // cors is set for every route
-// app.options('*', cors()) // cors is set for every preflight route
+  origin: corsOrginUrls, // required to pass secure cookie
+  credentials: true, // required to pass secure cookie
+  exposedHeaders: ['set-cookie'], // required to pass secure cookie
+}));
+
+// NOTE: other headers which could be used...
 // app.use(function(req, res, next) {
 //   res.header("Access-Control-Allow-Credentials", true);
 //   // res.header("Access-Control-Allow-Origin", "*");

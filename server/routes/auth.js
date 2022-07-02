@@ -145,7 +145,6 @@ router.post(
   body('password').notEmpty(),
   async (req, res) => {
     try {
-      console.log('/login')
       const errors = validationResult(req);
       if (!errors.isEmpty()) throw errors;
 
@@ -196,13 +195,12 @@ router.post(
       req.session.user_id = user._id;
       
       // Respond with accessToken and user DTO.
-      console.log(res.header());
-      console.log(res.getHeaders());
+      console.log('/login', 'status:', 200);
       res.status(200).json({ authenticated: true, accessToken, user: userCopy });
     } catch (error) {
       console.log(error)
       // return res.status(403).json({ message: 'Enter a valid email.' });
-      return res.status(403).send({ error: 'Enter a valid email.' });
+      return res.status(403).send({ error });
       // if (typeof error === 'string') return res.status(400).json({ error });
       // return res.status(400).json({ errors: error.array() });
     };

@@ -74,7 +74,7 @@ router.post('/v1/calendar/auth', async (req, res, next) => {
   //   {
   //   id: uuid(),
   //   type: 'web_hook',
-  //   address: 'https://dev.auth.overquota.io/api/google/v1/calendar/push/notification',
+  //   address: 'https://dev.auth.viewportmedia.org/api/google/v1/calendar/push/notification',
   //   token: 'target=myApp-test',
   //   expiration,
   // });
