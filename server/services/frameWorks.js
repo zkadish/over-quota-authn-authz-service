@@ -1,10 +1,20 @@
 const axios = require('axios');
 const { uuid } = require('../utils/data');
 
-let domain = 'http://localhost:9999';
-if (process.env.NODE_ENV === 'development') {
-  domain =  'https://dev.frameworks.service.overquota.io';
+let domain = 'https://dev.frameworks.service.viewportmedia.org';
+if (process.env.NODE_ENV === 'production') {
+  domain = 'https://dev.frameworks.service.viewportmedia.org';
 }
+if (process.env.NODE_ENV === 'development') {
+  domain = 'https://dev.frameworks.service.viewportmedia.org';
+}
+if (process.env.NODE_ENV === 'local') {
+  domain = 'http://localhost:9999';
+}
+
+console.log('process.env.NODE_ENV:', process.env.NODE_ENV);
+console.log('process.env.MODE:', process.env.MODE);
+console.log('frameworks domain:', domain);
 
 const weekday = dateObj => {
   let day = null;

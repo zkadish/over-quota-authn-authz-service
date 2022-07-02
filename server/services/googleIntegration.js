@@ -3,7 +3,7 @@ const axios = require('axios');
 
 // let authDomain = 'http://localhost:7777';
 // if (process.env.NODE_ENV === 'development') {
-//   authDomain = 'https://dev.auth.service.overquota.io';
+//   authDomain = 'https://dev.auth.service.viewportmedia.io';
 // }
 
 // POST set google calendar event watch
