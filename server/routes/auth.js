@@ -5,7 +5,6 @@ const { body, validationResult } = require('express-validator');
 const { mongoSessionStore } = require('../config/mongo/db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { jwtSecret } = require('../config/mongo');
 const crypto = require('crypto');
 
 const User = require('../model/User');
@@ -179,7 +178,7 @@ router.post(
       // encode user._id and user.email into the token
       const accessToken = jwt.sign(
         { _id: user._id, email: user.email },
-        jwtSecret,
+        process.env.JWT_SECRET,
         { expiresIn: '5m' },
       );
 
@@ -318,7 +317,7 @@ router.post(
       })
       .then(updateResponse => {
         console.log(updateResponse)
-        const resetLink = `${process.env.CLIENT_DOMAIN}/#/reset-password/${resetToken}`;
+        const resetLink = `http://localhost:3000/#/reset-password/${resetToken}`;
         // console.log(resetLink);
 
         // res.status(200).json({ redirect: 'LOGIN'});
