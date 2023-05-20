@@ -1,27 +1,24 @@
-if (process.env.MODE === 'local') {
-  console.log('MONGODB_LOCAL');
-  console.log(process.env.MONGO_LOCAL);
-  module.exports = {
-    // mongoDB: process.env.MONGO_CONNECT_TEST,
-    mongoDB: process.env.MONGO_LOCAL,
-    mongoSession: process.env.MONGO_SESSION_LOCAL,
-    jwtSecret: process.env.JWT_SECRET,
+const getMongoSettings = () => {
+  console.log('NODE_ENV =', process.env.NODE_ENV);
+  let mongoConfig = null;
+  if (process.env.NODE_ENV === 'local') {
+    console.log(`mongodb://authuser:${process.env.MONGO_LOCAL_PASSWORD}@localhost:56702/authServiceLocal`)
+    mongoConfig = {
+      mongoDB: `mongodb://authuser:${process.env.MONGO_LOCAL_PASSWORD}@localhost:56702/authServiceLocal`,
+      mongoSession: `mongodb://sessionuser:${process.env.MONGO_SESSION_LOCAL}@localhost:56702/sessionsLocal`,
+    }
+  } else if (process.env.NODE_ENV === 'development') {
+    mongoConfig = {
+      mongoDB: `mongodb://authuser:${process.env.MONGO_DEV_PASSWORD}@dev.auth.mongo.viewportmedia.org:27017/authServiceDev`,
+      mongoSession: `mongodb://sessionuser:${process.env.MONGO_SESSION_LOCAL}@dev.auth.mongo.viewportmedia.org:27017/sessionsDev`,
+    }
+  } else {
+    mongoConfig = {
+      mongoDB: `mongodb://authuser:${process.env.MONGO_PROD_PASSWORD}@localhost:56702/authService`,
+      mongoSession: `mongodb://sessionuser:${process.env.MONGO_SESSION_LOCAL}@localhost:56702/sessions`,
+    }
   }
-} else if (process.env.MODE === 'dev') {
-  console.log('MONGO_DEV');
-  console.log(process.env.MONGO_DEV);
-  module.exports = {
-    // mongoDB: process.env.MONGO_CONNECT_TEST,
-    mongoDB: process.env.MONGO_DEV,
-    mongoSession: process.env.MONGO_SESSION_DEV,
-    jwtSecret: process.env.JWT_SECRET,
-  }
-} else if (process.env.MODE === 'prod') {
-  console.log('MONGODB_PROD');
-  module.exports = {
-    mongoDB: process.env.MONGO_PROD,
-    mongoSession: process.env.MONGO_SESSION_PROD,
-    jwtSecret: process.env.JWT_SECRET,
-  }
+  return mongoConfig;
 }
 
+module.exports = getMongoSettings;

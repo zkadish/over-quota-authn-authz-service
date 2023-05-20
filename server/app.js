@@ -1,6 +1,5 @@
 require('dotenv').config();
 const { initMongo, mongoSessionStore } = require('./config/mongo/db');
-
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const createError = require('http-errors');
@@ -10,8 +9,6 @@ const compression = require("compression");
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-// const MongoDBStore = require('connect-mongodb-session')(session);
-// const MongoStore = require('connect-mongo').default;
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -23,20 +20,20 @@ const googleRouter = require('./routes/googleIntegration');
 // require('./nodemailer/nodemailer');
 // require('./mailchimp/mailchimp');
 
-const db = initMongo();
 const app = express();
+const db = initMongo();
 
 console.log('app.get("env") = ', app.get('env'));
 console.log('process.env.APP_SECRET:', process.env.APP_SECRET);
 
 let cookieDomain = '';
 let cookieSecure = false;
-let corsOrginUrls = ['localhost'];
+let corsOrginUrls = ['http://localhost:3000'];
 
 if (app.get('env') === 'local') {
   cookieDomain = '';
   cookieSecure = false;
-  corsOrginUrls = ['localhost'];
+  corsOrginUrls = ['http://localhost:3000'];
 }
 if (app.get('env') === 'development') {
   app.set('trust proxy', true); // required to pass secure cookie
@@ -64,7 +61,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser()); // required to pass secure cookie
 
-// server session config
+// // server session config
 app.use(session({
   genid: (req) => {
     console.log('Inside the session middleware');
