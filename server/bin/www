@@ -27,7 +27,9 @@ getSecrets().then(() => {
    * Listen on provided port, on all network interfaces.
    */
   //  server.listen(port, '0.0.0.0', () => { // use ip 0.0.0.0 when running inside of docker
-  server.listen(port, '127.0.0.1', () => {
+  // server.listen(port, '127.0.0.1', () => {
+  server.listen(port, '::', () => {
+  // server.listen(port, '::1', () => {
     console.log('app-server is starting...')
   });
   // server.listen(port);

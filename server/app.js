@@ -31,7 +31,7 @@ let cookieSecure = false;
 let corsOrginUrls = ['http://localhost:3000'];
 
 if (app.get('env') === 'local') {
-  cookieDomain = '';
+  cookieDomain = 'localhost';
   cookieSecure = false;
   corsOrginUrls = ['http://localhost:3000'];
 }
