@@ -66,6 +66,7 @@ app.use(session({
   genid: (req) => {
     console.log('Inside the session middleware');
     console.log('req.sessionID:', req.sessionID);
+    // const sessionId = uuidv4();
     return uuidv4(); // use UUIDs for session IDs
   },
   secret: process.env.APP_SECRET,
@@ -81,7 +82,7 @@ app.use(session({
     // maxAge: 1000 * 60, // 1 min
     maxAge: 1000 * 60 * 30, // 30 min
   },
-  // rolling: true,
+  rolling: true,
   store: mongoSessionStore,
 }));
 

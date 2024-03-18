@@ -16,6 +16,8 @@ const getSecrets = async () => {
 
   try {
     const response = await client.send(
+      // NOTE: only the SecretId is required to get the secrets... for more information see:
+      // https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
       new GetSecretValueCommand({
         SecretId: secret_name,
         VersionStage: "AWSCURRENT", // VersionStage defaults to AWSCURRENT if unspecified
@@ -40,7 +42,7 @@ const getSecrets = async () => {
     throw error;
   }
 
-  console.log('Secrets have been fetched!')
+  console.log('Secrets have been fetched!', secrets)
   return secrets;
 }
 

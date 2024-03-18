@@ -147,14 +147,15 @@ router.post(
       const errors = validationResult(req);
       if (!errors.isEmpty()) throw errors;
 
+      const { email, password } = req.body;
+      const user = await User.findOne({ email });
+
       if (req.session.authenticated) {
         console.log('req.session.authenticated === true');
-        res.status(200).json({ authenticated: true });
+        res.status(200).json({ authenticated: true, user: sanitizeUser(user) });
         return;
       };
 
-      const { email, password } = req.body;
-      const user = await User.findOne({ email });
       if (!user) throw 'There is no account with that email.';
 
       // Compare passwords with bcrypt.compare method 
@@ -190,6 +191,8 @@ router.post(
       // console.log(userCopy);
       // NOTE: never send the password to the client!
       delete userCopy.password;
+
+      console.log('cookie: ', req.session);
       req.session.authenticated = true;
       req.session.user_id = user._id;
       
@@ -210,7 +213,7 @@ router.get(
   '/authn',
   (req, res) => {
   console.log('/authn')
-  console.log('cookie.maxAge: ', req.session.cookie.maxAge);
+  // console.log('cookie.maxAge: ', req.session.cookie.maxAge);
 
   const destroySession = () => {
     req.session.destroy(() => {

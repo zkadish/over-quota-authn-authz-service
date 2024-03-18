@@ -5,7 +5,7 @@
  */
 
 const sanitizeUser = u => {
-  const user = { ...u };
+  const user = { ...u._doc };
   delete user.password;
 
   return user;
