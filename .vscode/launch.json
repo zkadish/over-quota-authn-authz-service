@@ -1,11 +1,11 @@
 {
   "configurations": [
-  {
-    "name": "Attach to Node",
-    "port": 9231,
-    "request": "attach",
-    "type": "node"
-  },
+    {
+      "name": "Attach to Node",
+      "port": 9231,
+      "request": "attach",
+      "type": "node"
+    },
     {
       "name": "Docker: Attach to Node",
       "type": "node",

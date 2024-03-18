@@ -4,8 +4,8 @@ The Sales Notes Framework Service Server contains CRUD micro service api for Fra
 
 ## Development getting started
 
-- $ nvm use node@>=12.20.0
-
+- $ nvm use node@>=20.9.0
+  
 ### Create the docker network
 
 - $ docker network create --driver bridge skillup-network
